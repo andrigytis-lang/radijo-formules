@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="lt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#eef0ea" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#141a12" media="(prefers-color-scheme: dark)">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Radijo">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style>
+<title>Radijo formulės</title>
+<style>
+/* Layout: field-manual cards, one per formula. Linked fields fill each other; anything computed gets the tinted fill. */
+:root{
+  --bg:#eef0ea; --card:#f9faf6; --field:#ffffff; --fg:#1d2419; --muted:#5c6656; --line:#cdd3c4;
+  --accent:#3f5f2a; --accent-bg:#dfe8d2;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141a12; --card:#1c241a; --field:#141a12; --fg:#e6ebdf; --muted:#97a28f; --line:#33402f;
+  --accent:#a9cf86; --accent-bg:#2a3a22; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a12; --card:#1c241a; --field:#141a12; --fg:#e6ebdf; --muted:#97a28f; --line:#33402f;
+  --accent:#a9cf86; --accent-bg:#2a3a22; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.5;
+  padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+main{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header h1{font-size:24px;font-weight:600;margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{color:var(--muted);font-size:14px;margin:4px 0 0;max-width:60ch}
+section{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.hd{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:30px}
+h2{font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin:0}
+.clr{font:500 13px var(--sans);color:var(--muted);background:transparent;border:1px solid var(--line);border-radius:4px;padding:4px 10px;cursor:pointer}
+.clr:hover{color:var(--fg);border-color:var(--muted)}
+.fx{margin:0;font:500 16px/1.6 var(--mono);display:flex;flex-wrap:wrap;gap:2px 24px}
+.fx span{white-space:nowrap}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted);flex:1 1 120px;min-width:0}
+label.wide{flex-basis:210px}
+input,select{color:var(--fg);background:var(--field);border:1px solid var(--line);border-radius:4px;width:100%;min-width:0}
+input{font:500 18px var(--mono);padding:9px 10px;font-variant-numeric:tabular-nums}
+select{font:500 15px var(--sans);padding:10px 8px}
+input.calc{background:var(--accent-bg);border-color:var(--accent-bg)}
+input:focus-visible,select:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.ct{font-size:11px;line-height:1;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);visibility:hidden}
+label.is-calc .ct{visibility:visible}
+.out{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.r{background:var(--accent-bg);border-radius:4px;padding:9px 12px;min-width:0}
+.r small{display:block;font-size:12px;color:var(--muted)}
+.r b{display:block;font:500 21px/1.3 var(--mono);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.r .cm{display:block;font:400 13px var(--mono);color:var(--muted)}
+.sol{margin:0;padding:10px 12px;border-radius:4px;background:var(--bg);font:400 14px/1.65 var(--mono);overflow-wrap:break-word}
+.sol div:first-child{color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:0}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{font-size:12px;color:var(--muted);font-weight:500}
+td:first-child{font-weight:600}
+tr.on td{background:var(--accent-bg)}
+@media (prefers-reduced-motion:no-preference){input,td{transition:background-color .15s ease}}
+</style>
+
+<main>
+  <header>
+    <h1>Radijo formulės</h1>
+    <p>Įvesk žinomus dydžius. Spalvoti laukai ir rezultatai apskaičiuojami automatiškai.</p>
+  </header>
+
+  <section>
+    <div class="hd"><h2>Bangos ilgis ir dažnis</h2><button type="button" class="clr" id="w_clr">Išvalyti</button></div>
+    <p class="fx"><span>λ = 300 / f</span><span>f = 300 / λ</span></p>
+    <div class="row">
+      <label for="w_f">Dažnis f, MHz<input id="w_f" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="100"><span class="ct">apskaičiuota</span></label>
+      <label for="w_l">Bangos ilgis λ, m<input id="w_l" inputmode="decimal" autocomplete="off" enterkeyhint="done"><span class="ct">apskaičiuota</span></label>
+    </div>
+    <div class="out"><div class="r"><small>Juosta</small><b id="w_b">–</b><span class="cm" id="w_br"></span></div></div>
+    <div class="sol" id="w_s"></div>
+    <p class="note">Įvesk dažnį arba bangos ilgį, kitas laukas užsipildys pats.</p>
+  </section>
+
+  <section>
+    <div class="hd"><h2>Pusbangis dipolis</h2><button type="button" class="clr" id="d_clr">Išvalyti</button></div>
+    <p class="fx"><span id="d_fx">L = 142,5 / f</span><span>petys = L / 2</span></p>
+    <div class="row">
+      <label for="d_f">Dažnis f, MHz<input id="d_f" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="100"></label>
+      <label for="d_k" class="wide">Formulė<select id="d_k"><option value="142.5">142,5 / f (praktinė)</option><option value="150">150 / f (teorinė)</option></select></label>
+    </div>
+    <div class="out">
+      <div class="r"><small>Visas ilgis L</small><b id="d_L">–</b><span class="cm" id="d_Lc"></span></div>
+      <div class="r"><small>Vienas petys</small><b id="d_a">–</b><span class="cm" id="d_ac"></span></div>
+    </div>
+    <div class="sol" id="d_s"></div>
+    <p class="note">142,5 = 150 × 0,95, tai 5 % sutrumpinimas. Rinkis formulę, kurią naudoja instruktorius.</p>
+  </section>
+
+  <section>
+    <div class="hd"><h2>Ground plane</h2><button type="button" class="clr" id="g_clr">Išvalyti</button></div>
+    <p class="fx"><span id="g_fx">vibratorius = 71,25 / f</span><span>radialas = 75 / f</span></p>
+    <div class="row">
+      <label for="g_f">Dažnis f, MHz<input id="g_f" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="100"></label>
+      <label for="g_k" class="wide">Vibratoriaus formulė<select id="g_k"><option value="71.25">71,25 / f (praktinė)</option><option value="75">75 / f (teorinė)</option></select></label>
+    </div>
+    <div class="out">
+      <div class="r"><small>Vibratorius</small><b id="g_v">–</b><span class="cm" id="g_vc"></span></div>
+      <div class="r"><small>Radialas, 3–4 vnt.</small><b id="g_r">–</b><span class="cm" id="g_rc"></span></div>
+    </div>
+    <div class="sol" id="g_s"></div>
+    <p class="note">Radialus atlenk 30–45° žemyn. Kabelio gysla jungiama prie vibratoriaus, ekranas prie radialų.</p>
+  </section>
+
+  <section>
+    <div class="hd"><h2>Radijo horizontas</h2><button type="button" class="clr" id="h_clr">Išvalyti</button></div>
+    <p class="fx"><span id="h_fx">d = 3,57 × (√h₁ + √h₂)</span></p>
+    <div class="row">
+      <label for="h_1">Antena h₁, m<input id="h_1" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="9"></label>
+      <label for="h_2">Antena h₂, m<input id="h_2" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="6"></label>
+      <label for="h_k">Koeficientas k<select id="h_k"><option value="3.57">3,57 (kurso formulė)</option><option value="4.12">4,12 (su lūžiu)</option></select></label>
+    </div>
+    <div class="out"><div class="r"><small>Nuotolis d</small><b id="h_d">–</b></div></div>
+    <div class="sol" id="h_s"></div>
+    <p class="note">Aukščiai metrais, nuotolis kilometrais. Tinka VHF ir UHF, kai tarp antenų nėra kliūčių.</p>
+  </section>
+
+  <section>
+    <div class="hd"><h2>Omo dėsnis ir galia</h2><button type="button" class="clr" id="o_clr">Išvalyti</button></div>
+    <p class="fx"><span>U = I · R</span><span>P = U · I</span></p>
+    <div class="row">
+      <label for="o_u">Įtampa U, V<input id="o_u" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="12"><span class="ct">apskaičiuota</span></label>
+      <label for="o_i">Srovė I, A<input id="o_i" inputmode="decimal" autocomplete="off" enterkeyhint="done"><span class="ct">apskaičiuota</span></label>
+      <label for="o_r">Varža R, Ω<input id="o_r" inputmode="decimal" autocomplete="off" enterkeyhint="done" value="4"><span class="ct">apskaičiuota</span></label>
+      <label for="o_p">Galia P, W<input id="o_p" inputmode="decimal" autocomplete="off" enterkeyhint="done"><span class="ct">apskaičiuota</span></label>
+    </div>
+    <div class="sol" id="o_s"></div>
+    <p class="note">Įvesk bet kuriuos du dydžius, kiti du apskaičiuojami.</p>
+  </section>
+
+  <section>
+    <div class="hd"><h2>Dažnių juostos</h2></div>
+    <div class="tw"><table>
+      <thead><tr><th>Juosta</th><th>Dažnis</th><th>Bangos ilgis</th><th>Sklidimas</th></tr></thead>
+      <tbody>
+        <tr data-band="HF"><td>HF</td><td>3–30 MHz</td><td>100–10 m</td><td>Paviršinė ir erdvinė banga</td></tr>
+        <tr data-band="VHF"><td>VHF</td><td>30–300 MHz</td><td>10–1 m</td><td>Tiesioginis matomumas</td></tr>
+        <tr data-band="UHF"><td>UHF</td><td>300–3000 MHz</td><td>1 m–10 cm</td><td>Tiesioginis, kliūtys trukdo</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Paryškinta juosta, kuriai priklauso pirmoje kortelėje įvestas dažnis.</p>
+  </section>
+</main>
+
+<script>
+function $(id){return document.getElementById(id)}
+function num(el){var s=String(el.value).trim().replace(/\s+/g,'').replace(',','.');if(s==='')return null;var v=Number(s);return isFinite(v)?v:NaN}
+function fm(x,d){if(x===null||x===undefined||!isFinite(x))return '–';var p=Math.pow(10,d===undefined?4:d);var r=Math.round(x*p)/p;if(r===0&&x!==0)r=Number(x.toPrecision(2));return String(r).replace('.',',')}
+function cm(m){return fm(m*100,1)+' cm'}
+function put(id,t){$(id).textContent=t}
+function sol(id,lines){var el=$(id);el.textContent='';for(var i=0;i<lines.length;i++){var d=document.createElement('div');d.textContent=lines[i];el.appendChild(d)}}
+function mark(el,on){el.classList.toggle('calc',on);var l=el.closest('label');if(l)l.classList.toggle('is-calc',on)}
+function hint(v,empty){return v===null?empty:(isNaN(v)?'Įvesk skaičių.':'Įvesk teigiamą skaičių.')}
+
+/* Bangos ilgis ir dažnis: du susieti laukai */
+var wf=$('w_f'),wl=$('w_l'),wSrc='f';
+function bandOf(f){if(!(f>0))return null;if(f<3)return['low','Žemiau HF','mažiau nei 3 MHz'];if(f<30)return['HF','HF','3–30 MHz'];if(f<300)return['VHF','VHF','30–300 MHz'];if(f<3000)return['UHF','UHF','300–3000 MHz'];return['high','Virš UHF','daugiau nei 3000 MHz']}
+function wave(){
+  var src=wSrc==='f'?wf:wl,dst=wSrc==='f'?wl:wf,v=num(src),f=null,lines;
+  mark(src,false);
+  if(!(v>0)){dst.value='';mark(dst,false);lines=[hint(v,'Įvesk dažnį arba bangos ilgį.')]}
+  else{
+    var o=300/v;dst.value=fm(o);mark(dst,true);
+    if(wSrc==='f'){f=v;lines=['Duota: f = '+fm(v)+' MHz','λ = 300 / '+fm(v)+' = '+fm(o)+' m'+(o<1?' ('+cm(o)+')':'')]}
+    else{f=o;lines=['Duota: λ = '+fm(v)+' m','f = 300 / '+fm(v)+' = '+fm(o)+' MHz']}
+  }
+  sol('w_s',lines);
+  var b=bandOf(f);put('w_b',b?b[1]:'–');put('w_br',b?b[2]:'');
+  var rows=document.querySelectorAll('tr[data-band]');
+  for(var i=0;i<rows.length;i++)rows[i].classList.toggle('on',!!b&&rows[i].getAttribute('data-band')===b[0]);
+}
+wf.addEventListener('input',function(){wSrc='f';wave()});
+wl.addEventListener('input',function(){wSrc='l';wave()});
+$('w_clr').addEventListener('click',function(){wf.value='';wl.value='';wSrc='f';wave()});
+
+/* Pusbangis dipolis */
+function dip(){
+  var f=num($('d_f')),k=Number($('d_k').value),lines;
+  put('d_fx','L = '+fm(k)+' / f');
+  if(f>0){
+    var L=k/f;put('d_L',fm(L)+' m');put('d_Lc',cm(L));put('d_a',fm(L/2)+' m');put('d_ac',cm(L/2));
+    lines=['Duota: f = '+fm(f)+' MHz','L = '+fm(k)+' / '+fm(f)+' = '+fm(L)+' m','petys = '+fm(L)+' / 2 = '+fm(L/2)+' m'];
+  }else{put('d_L','–');put('d_a','–');put('d_Lc','');put('d_ac','');lines=[hint(f,'Įvesk dažnį.')]}
+  sol('d_s',lines);
+}
+
+/* Ground plane */
+function gp(){
+  var f=num($('g_f')),k=Number($('g_k').value),lines;
+  put('g_fx','vibratorius = '+fm(k)+' / f');
+  if(f>0){
+    var v=k/f,r=75/f;put('g_v',fm(v)+' m');put('g_vc',cm(v));put('g_r',fm(r)+' m');put('g_rc',cm(r));
+    lines=['Duota: f = '+fm(f)+' MHz','vibratorius = '+fm(k)+' / '+fm(f)+' = '+fm(v)+' m','radialas = 75 / '+fm(f)+' = '+fm(r)+' m'];
+  }else{put('g_v','–');put('g_r','–');put('g_vc','');put('g_rc','');lines=[hint(f,'Įvesk dažnį.')]}
+  sol('g_s',lines);
+}
+
+/* Radijo horizontas */
+function hor(){
+  var a=num($('h_1')),b=num($('h_2')),k=Number($('h_k').value),lines;
+  put('h_fx','d = '+fm(k)+' × (√h₁ + √h₂)');
+  if(a===null||b===null){put('h_d','–');lines=['Įvesk abiejų antenų aukščius.']}
+  else if(isNaN(a)||isNaN(b)){put('h_d','–');lines=['Įvesk skaičių.']}
+  else if(a<0||b<0){put('h_d','–');lines=['Aukštis negali būti neigiamas.']}
+  else{
+    var sa=Math.sqrt(a),sb=Math.sqrt(b),d=k*(sa+sb);put('h_d',fm(d,2)+' km');
+    lines=['Duota: h₁ = '+fm(a)+' m, h₂ = '+fm(b)+' m','√'+fm(a)+' = '+fm(sa)+', √'+fm(b)+' = '+fm(sb),'d = '+fm(k)+' × ('+fm(sa)+' + '+fm(sb)+') = '+fm(d,2)+' km'];
+  }
+  sol('h_s',lines);
+}
+
+/* Omo dėsnis ir galia: bet kurie du iš keturių */
+var O={u:$('o_u'),i:$('o_i'),r:$('o_r'),p:$('o_p')},KEYS=['u','i','r','p'],oSrc=['r','u'];
+var UN={u:'V',i:'A',r:'Ω',p:'W'},NM={u:'U',i:'I',r:'R',p:'P'};
+function ohmIn(key){
+  oSrc=oSrc.filter(function(k){return k!==key});
+  if(O[key].value.trim()!=='')oSrc.unshift(key);
+  oSrc=oSrc.slice(0,2);
+  ohm();
+}
+function ohm(){
+  var lines,vals=null;
+  KEYS.forEach(function(k){if(oSrc.indexOf(k)>=0)mark(O[k],false)});
+  if(oSrc.length===2){
+    var v={};oSrc.forEach(function(k){v[k]=num(O[k])});
+    if(oSrc.every(function(k){return v[k]>0})){
+      var h=function(k){return k in v},U,I,R,P,st;
+      if(h('u')&&h('i')){U=v.u;I=v.i;R=U/I;P=U*I;st=['R = U / I = '+fm(U)+' / '+fm(I)+' = '+fm(R)+' Ω','P = U · I = '+fm(U)+' × '+fm(I)+' = '+fm(P)+' W']}
+      else if(h('u')&&h('r')){U=v.u;R=v.r;I=U/R;P=U*I;st=['I = U / R = '+fm(U)+' / '+fm(R)+' = '+fm(I)+' A','P = U · I = '+fm(U)+' × '+fm(I)+' = '+fm(P)+' W']}
+      else if(h('u')&&h('p')){U=v.u;P=v.p;I=P/U;R=U/I;st=['I = P / U = '+fm(P)+' / '+fm(U)+' = '+fm(I)+' A','R = U / I = '+fm(U)+' / '+fm(I)+' = '+fm(R)+' Ω']}
+      else if(h('i')&&h('r')){I=v.i;R=v.r;U=I*R;P=U*I;st=['U = I · R = '+fm(I)+' × '+fm(R)+' = '+fm(U)+' V','P = U · I = '+fm(U)+' × '+fm(I)+' = '+fm(P)+' W']}
+      else if(h('i')&&h('p')){I=v.i;P=v.p;U=P/I;R=U/I;st=['U = P / I = '+fm(P)+' / '+fm(I)+' = '+fm(U)+' V','R = U / I = '+fm(U)+' / '+fm(I)+' = '+fm(R)+' Ω']}
+      else{R=v.r;P=v.p;I=Math.sqrt(P/R);U=I*R;st=['P = I² · R, todėl I = √(P / R)','I = √('+fm(P)+' / '+fm(R)+') = '+fm(I)+' A','U = I · R = '+fm(I)+' × '+fm(R)+' = '+fm(U)+' V']}
+      vals={u:U,i:I,r:R,p:P};
+      lines=['Duota: '+KEYS.filter(h).map(function(k){return NM[k]+' = '+fm(v[k])+' '+UN[k]}).join(', ')].concat(st);
+    }else lines=['Įvesk teigiamus skaičius.'];
+  }else lines=['Įvesk bet kuriuos du dydžius.'];
+  KEYS.forEach(function(k){if(oSrc.indexOf(k)<0){if(vals){O[k].value=fm(vals[k]);mark(O[k],true)}else{O[k].value='';mark(O[k],false)}}});
+  sol('o_s',lines);
+}
+KEYS.forEach(function(k){O[k].addEventListener('input',function(){ohmIn(k)})});
+$('o_clr').addEventListener('click',function(){KEYS.forEach(function(k){O[k].value=''});oSrc=[];ohm()});
+
+/* Bendri įvykiai */
+function on(ids,fn){ids.forEach(function(id){$(id).addEventListener('input',fn);$(id).addEventListener('change',fn)})}
+on(['d_f','d_k'],dip);on(['g_f','g_k'],gp);on(['h_1','h_2','h_k'],hor);
+$('d_clr').addEventListener('click',function(){$('d_f').value='';dip()});
+$('g_clr').addEventListener('click',function(){$('g_f').value='';gp()});
+$('h_clr').addEventListener('click',function(){$('h_1').value='';$('h_2').value='';hor()});
+[wf,wl,O.u,O.i,O.r,O.p].forEach(function(el){el.addEventListener('focus',function(){if(el.classList.contains('calc'))setTimeout(function(){try{el.select()}catch(e){}},0)})});
+
+wave();dip();gp();hor();ohm();
+</script>
+
+<script>
+if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+</script>
+</html>
